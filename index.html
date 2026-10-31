@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waste to Wonder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>♻️ Waste to Wonder</h1>
+        <p>Turn Waste into Wonderful Creations!</p>
+    </header>
+
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#create">Create Ideas</a>
+        <a href="#about">About</a>
+    </nav>
+
+    <section id="home">
+        <h2>Welcome to Waste to Wonder</h2>
+        <p>Discover creative ways to reuse waste materials.</p>
+        <button onclick="startProject()">Get Started</button>
+    </section>
+
+    <section id="create">
+        <h2>Upload Your Waste Image</h2>
+        <input type="file" id="wasteImage" accept="image/*" onchange="previewImage(event)">
+        <br>
+        <img id="preview" alt="Image Preview">
+        <br>
+        <button onclick="getIdeas()">Find Creative Ideas</button>
+        <div id="result"></div>
+    </section>
+
+    <section id="about">
+        <h2>About Our Project</h2>
+        <p>Our mission is to reduce waste and encourage recycling through creativity.</p>
+    </section>
+
+    <footer>
+        <p>© 2026 Waste to Wonder | Save Earth 🌍</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
