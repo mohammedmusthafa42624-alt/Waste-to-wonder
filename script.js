@@ -2,76 +2,94 @@ const upload = document.getElementById("wasteImage");
 const preview = document.getElementById("preview");
 const result = document.getElementById("result");
 
-let selectedIdeas = [];
+let model = null;
+let selectedObject = "";
 
 const ideas = {
-  bottle: [
-    "Make a small flower vase.",
-    "Create a self-watering plant pot.",
-    "Turn it into a bird feeder."
-  ],
-  paper: [
-    "Make handmade greeting cards.",
-    "Create paper flowers.",
-    "Make a colorful paper basket."
-  ],
-  cardboard: [
-    "Build a desk organizer.",
-    "Make a toy house.",
-    "Create a photo frame."
-  ],
-  can: [
-    "Make a pencil holder.",
-    "Create a decorative planter.",
-    "Turn it into a desk organizer."
-  ],
-  plastic: [
-    "Make a small storage container.",
-    "Create a plant pot.",
-    "Make a DIY pen stand."
-  ],
-  default: [
-    "Create a decorative craft.",
-    "Make a useful home organizer.",
-    "Try a creative recycled art project."
-  ]
+    mouse: [
+        "Create a small desk decoration.",
+        "Use it for a computer-themed art project.",
+        "Make a creative recycled display."
+    ],
+    bottle: [
+        "Make a flower vase.",
+        "Create a plant pot.",
+        "Make a bird feeder."
+    ],
+    paper: [
+        "Create handmade greeting cards.",
+        "Make paper flowers.",
+        "Create a paper basket."
+    ],
+    cardboard: [
+        "Build a desk organizer.",
+        "Make a toy house.",
+        "Create a photo frame."
+    ],
+    default: [
+        "Create a decorative craft.",
+        "Make a useful organizer.",
+        "Try a recycled art project."
+    ]
 };
 
-function previewImage(event) {
-  const file = event.target.files[0];
-
-  if (!file) return;
-
-  preview.src = URL.createObjectURL(file);
-  preview.style.display = "block";
-  result.innerHTML = "";
-  selectedIdeas = [];
-
-  const name = file.name.toLowerCase();
-
-  for (const item of ["bottle", "paper", "cardboard", "can", "plastic"]) {
-    if (name.includes(item)) {
-      selectedIdeas = ideas[item];
-      break;
+async function loadModel() {
+    result.innerHTML = "Loading image recognition model...";
+    try {
+        model = await mobilenet.load();
+        result.innerHTML = "Model ready! Upload a waste image.";
+    } catch (error) {
+        result.innerHTML = "Could not load model. Check your internet.";
     }
-  }
-
-  if (selectedIdeas.length === 0) {
-    selectedIdeas = ideas.default;
-  }
 }
 
-function getIdeas() {
-  if (!upload.files.length) {
-    result.innerHTML = "<p>Please upload a waste image first!</p>";
-    return;
-  }
+function previewImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-  result.innerHTML = `
-    <h2>♻️ Creative Reuse Ideas</h2>
-    <ul>
-      ${selectedIdeas.map(idea => `<li>${idea}</li>`).join("")}
-    </ul>
-    <p>Let's turn waste into wonder! 🌍</p>
-  `;
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+    selectedObject = "";
+    result.innerHTML = "Image uploaded. Click Find Creative Ideas.";
 }
+
+async function getIdeas() {
+    if (!upload.files.length) {
+        result.innerHTML = "Please upload an image first!";
+        return;
+    }
+
+    if (!model) {
+        result.innerHTML = "Please wait. Model is loading...";
+        return;
+    }
+
+    result.innerHTML = "🔍 Recognizing your image...";
+
+    try {
+        const predictions = await model.classify(preview);
+        const label = predictions[0].className.toLowerCase();
+
+        let category = "default";
+
+        if (label.includes("mouse")) category = "mouse";
+        else if (label.includes("bottle")) category = "bottle";
+        else if (label.includes("paper")) category = "paper";
+        else if (label.includes("carton") || label.includes("box")) category = "cardboard";
+
+        const selectedIdeas = ideas[category];
+
+        result.innerHTML = `
+            <h2>🔍 Detected Object</h2>
+            <p>${label}</p>
+            <h2>♻️ Creative Reuse Ideas</h2>
+            <ul>
+                ${selectedIdeas.map(idea => `<li>${idea}</li>`).join("")}
+            </ul>
+        `;
+    } catch (error) {
+        result.innerHTML = "Image recognition failed. Please try again.";
+    }
+}
+
+loadModel();
