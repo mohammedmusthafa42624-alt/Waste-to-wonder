@@ -27,11 +27,20 @@
 
     <section id="create">
         <h2>Upload Your Waste Image</h2>
-        <input type="file" id="wasteImage" accept="image/*" onchange="previewImage(event)">
+
+        <input type="file" id="wasteImage"
+               accept="image/*"
+               onchange="previewImage(event)">
+
         <br>
-        <img id="preview" alt="Image Preview">
+
+        <img id="preview" alt="Image Preview"
+             style="display:none; max-width:300px;">
+
         <br>
+
         <button onclick="getIdeas()">Find Creative Ideas</button>
+
         <div id="result"></div>
     </section>
 
@@ -44,6 +53,9 @@
         <p>© 2026 Waste to Wonder | Save Earth 🌍</p>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
     <script src="script.js"></script>
+
 </body>
 </html>
