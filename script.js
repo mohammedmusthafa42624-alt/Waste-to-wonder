@@ -127,3 +127,185 @@ const projects = {
         ["Garden Marker", ["Suitable material", "Marker"], ["Choose a safe material.", "Write a plant name.", "Place it near a pot."]]
     ]
 };
+async function loadModel() {
+    result.textContent = "Loading image recognition model...";
+
+    try {
+        model = await mobilenet.load();
+        result.textContent = "Ready! Upload a waste object.";
+    } catch (error) {
+        result.textContent = "Model loading failed. Check your internet.";
+    }
+}
+
+function startProject() {
+    document.getElementById("create").scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+function previewImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+
+    result.textContent = "Image uploaded. Click Find Creative Ideas.";
+    tutorial.innerHTML = "";
+    shownIdeas = [];
+}
+
+function identifyObject(label) {
+    const rules = {
+        bottle: ["bottle", "flask"],
+        cardboard: ["carton", "cardboard", "box"],
+        paper: ["paper", "newspaper"],
+        spoon: ["spoon"],
+        clothes: ["shirt", "jersey", "jean", "clothing", "coat"],
+        can: ["can", "tin"],
+        jar: ["jar"],
+        wood: ["wood", "timber", "wooden"]
+    };
+
+    for (const [category, words] of Object.entries(rules)) {
+        if (words.some(word => label.includes(word))) {
+            return category;
+        }
+    }
+
+    return "default";
+}
+
+async function getIdeas() {
+    if (!upload.files.length) {
+        result.textContent = "Please upload an image first!";
+        return;
+    }
+
+    if (!model) {
+        result.textContent = "Please wait. Model is loading...";
+        return;
+    }
+
+    result.textContent = "Recognizing object...";
+
+    try {
+        const predictions = await model.classify(preview);
+        const label = predictions[0].className.toLowerCase();
+
+        selectedObject = identifyObject(label);
+        shownIdeas = [];
+
+        displayIdeas(label);
+    } catch (error) {
+        result.textContent = "Could not recognize the image.";
+    }
+}
+
+function displayIdeas(label) {
+    const items = projects[selectedObject] || projects.default;
+
+    currentIdeas = [...items];
+
+    result.innerHTML = `
+        <h2>Detected Object</h2>
+        <p>${escapeHTML(label || selectedObject)}</p>
+        <h2>♻️ Reuse Ideas</h2>
+        <div id="ideaList"></div>
+        <button onclick="generateMoreIdeas()">Generate More Ideas</button>
+    `;
+
+    renderIdeas();
+    tutorial.innerHTML = "";
+}
+
+function renderIdeas() {
+    const list = document.getElementById("ideaList");
+
+    const available = currentIdeas
+        .map((project, index) => index)
+        .filter(index => !shownIdeas.includes(index));
+
+    const selected = available.slice(0, 5);
+
+    selected.forEach(index => shownIdeas.push(index));
+
+    list.innerHTML = selected.map(index => `
+        <div class="idea-card">
+            <h3>${escapeHTML(currentIdeas[index][0])}</h3>
+            <button onclick="showTutorial(${index})">
+                How to Make
+            </button>
+        </div>
+    `).join("");
+
+    if (shownIdeas.length >= currentIdeas.length) {
+        list.innerHTML += "<p>All available ideas shown!</p>";
+    }
+}
+
+function generateMoreIdeas() {
+    if (shownIdeas.length >= currentIdeas.length) {
+        alert("All available ideas have been shown!");
+        return;
+    }
+
+    renderIdeas();
+}
+
+function useManualObject() {
+    const input = document.getElementById("manualObject");
+
+    if (!input) {
+        alert("Manual object input is not available in your HTML yet.");
+        return;
+    }
+
+    const name = input.value.trim().toLowerCase();
+
+    if (!name) {
+        alert("Enter an object name.");
+        return;
+    }
+
+    selectedObject = identifyObject(name);
+    shownIdeas = [];
+    displayIdeas(name);
+}
+
+function showTutorial(index) {
+    const project = currentIdeas[index];
+
+    if (!project) return;
+
+    tutorial.innerHTML = `
+        <h2>${escapeHTML(project[0])}</h2>
+
+        <h3>Materials Required</h3>
+        <ul>
+            ${project[1].map(item => `<li>${escapeHTML(item)}</li>`).join("")}
+        </ul>
+
+        <h3>Step-by-Step Instructions</h3>
+        <ol>
+            ${project[2].map(step => `<li>${escapeHTML(step)}</li>`).join("")}
+        </ol>
+
+        <p>♻️ Great job giving waste a new life!</p>
+    `;
+
+    tutorial.scrollIntoView({ behavior: "smooth" });
+}
+
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
+}
+
+loadModel();
