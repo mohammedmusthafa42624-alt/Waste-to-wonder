@@ -6,76 +6,81 @@ const tutorial = document.getElementById("tutorial");
 
 let model = null;
 let selectedObject = "default";
+let currentSteps = [];
 let currentStep = 0;
 
-const ideas = {
-    mouse: [
-        "Create a small desk decoration.",
-        "Make a computer-themed art display.",
-        "Create a recycled art project."
-    ],
+const projects = {
     bottle: [
-        "Make a flower vase.",
-        "Create a plant pot.",
-        "Make a bird feeder."
+        {
+            title: "Bottle Flower Pot",
+            steps: [
+                "Take a clean, empty plastic bottle.",
+                "Use a pre-cut bottle or ask an adult to cut it safely.",
+                "Decorate the bottle with colors and stickers.",
+                "Add soil inside the bottle.",
+                "Plant a small plant and water it."
+            ]
+        },
+        {
+            title: "Bottle Desk Organizer",
+            steps: [
+                "Take a clean, pre-cut plastic bottle.",
+                "Decorate its outside with paper.",
+                "Put pencils and pens inside.",
+                "Keep it on your study table."
+            ]
+        }
     ],
-    paper: [
-        "Create handmade greeting cards.",
-        "Make paper flowers.",
-        "Create a paper basket."
-    ],
-    cardboard: [
-        "Build a desk organizer.",
-        "Make a toy house.",
-        "Create a photo frame."
-    ],
-    default: [
-        "Create a decorative craft.",
-        "Make a useful organizer.",
-        "Try a recycled art project."
-    ]
-};
 
-const tutorials = {
-    mouse: {
-        title: "🖱️ Mouse Recycling Art",
-        steps: [
-            "Choose a clean, unplugged old computer mouse.",
-            "Wipe its outside surface with a dry cloth.",
-            "Decorate the outside with stickers or paper.",
-            "Display your computer-themed artwork."
-        ]
-    },
-    bottle: {
-        title: "🌸 Bottle Flower Pot",
-        steps: [
-            "Take a clean, empty plastic bottle.",
-            "Ask an adult to help prepare the bottle safely.",
-            "Decorate the outside with colors or stickers.",
-            "Add suitable soil to the prepared container.",
-            "Plant a small plant and water it."
-        ]
-    },
-    paper: {
-        title: "🌼 Paper Flowers",
-        steps: [
-            "Take some clean waste paper.",
-            "Draw flower shapes on the paper.",
-            "Ask an adult to help cut the shapes with scissors.",
-            "Layer the shapes to make a flower.",
-            "Decorate your paper flower."
-        ]
-    },
-    cardboard: {
-        title: "📦 Cardboard Organizer",
-        steps: [
-            "Take a clean cardboard box.",
-            "Decide what items you want to organize.",
-            "Ask an adult to help cut cardboard pieces safely.",
-            "Arrange the pieces inside the box.",
-            "Decorate your organizer."
-        ]
-    }
+    paper: [
+        {
+            title: "Paper Greeting Card",
+            steps: [
+                "Take a clean sheet of waste paper.",
+                "Fold it in half.",
+                "Draw a design on the front.",
+                "Write a greeting inside."
+            ]
+        }
+    ],
+
+    cardboard: [
+        {
+            title: "Cardboard Desk Organizer",
+            steps: [
+                "Collect clean cardboard pieces.",
+                "Arrange them into small compartments.",
+                "Ask an adult to help cut pieces if needed.",
+                "Decorate with colored paper.",
+                "Keep stationery inside."
+            ]
+        }
+    ],
+
+    mouse: [
+        {
+            title: "Mouse Recycling Art",
+            steps: [
+                "Use an old mouse that is disconnected from power.",
+                "Clean only its outside surface.",
+                "Decorate the outside with stickers.",
+                "Display it as a computer-themed art piece.",
+                "Send unusable electronics to an e-waste collection center."
+            ]
+        }
+    ],
+
+    default: [
+        {
+            title: "Recycled Art",
+            steps: [
+                "Take a clean waste item.",
+                "Think of a useful way to reuse it.",
+                "Decorate it using safe craft materials.",
+                "Display your creation."
+            ]
+        }
+    ]
 };
 
 async function loadModel() {
@@ -83,10 +88,16 @@ async function loadModel() {
 
     try {
         model = await mobilenet.load();
-        result.innerHTML = "✅ Model ready! Upload a waste image.";
+        result.innerHTML = "Model ready! Upload a waste image.";
     } catch (error) {
         result.innerHTML = "Could not load model. Check your internet.";
     }
+}
+
+function startProject() {
+    document.getElementById("create").scrollIntoView({
+        behavior: "smooth"
+    });
 }
 
 function previewImage(event) {
@@ -98,9 +109,7 @@ function previewImage(event) {
     preview.style.display = "block";
 
     selectedObject = "default";
-    currentStep = 0;
-
-    result.innerHTML = "Image uploaded! Click Find Creative Ideas.";
+    result.innerHTML = "Image uploaded. Click Find Creative Ideas.";
     tutorial.innerHTML = "";
 }
 
@@ -115,95 +124,112 @@ async function getIdeas() {
         return;
     }
 
-    result.innerHTML = "🔍 Recognizing your image...";
+    result.innerHTML = "Recognizing your image...";
 
     try {
         const predictions = await model.classify(preview);
         const label = predictions[0].className.toLowerCase();
 
-        if (label.includes("mouse")) {
-            selectedObject = "mouse";
-        } else if (label.includes("bottle")) {
+        selectedObject = "default";
+
+        if (label.includes("bottle")) {
             selectedObject = "bottle";
         } else if (label.includes("paper")) {
             selectedObject = "paper";
-        } else if (
-            label.includes("carton") ||
-            label.includes("box")
-        ) {
+        } else if (label.includes("carton") ||
+                   label.includes("box")) {
             selectedObject = "cardboard";
-        } else {
-            selectedObject = "default";
+        } else if (label.includes("mouse")) {
+            selectedObject = "mouse";
         }
 
-        const selectedIdeas = ideas[selectedObject];
+        const selectedProjects = projects[selectedObject];
 
         result.innerHTML = `
-            <h2>🔍 Detected Object</h2>
+            <h2>Detected Object</h2>
             <p>${label}</p>
-
-            <h2>♻️ Creative Reuse Ideas</h2>
-
-            <ul>
-                ${selectedIdeas.map((idea, index) => `
-                    <li>
-                        ${idea}
-                        <button onclick="showTutorial(${index})">
-                            How to Make
-                        </button>
-                    </li>
-                `).join("")}
-            </ul>
+            <h2>Creative Reuse Ideas</h2>
+            ${selectedProjects.map((project, index) => `
+                <div class="idea-card">
+                    <h3>${project.title}</h3>
+                    <button onclick="showTutorial(${index})">
+                        How to Make
+                    </button>
+                </div>
+            `).join("")}
         `;
 
+        tutorial.innerHTML = "";
+
     } catch (error) {
-        result.innerHTML = "Image recognition failed. Please try again.";
+        result.innerHTML = "Image recognition failed. Try again.";
     }
 }
 
 function showTutorial(index) {
-    const data = tutorials[selectedObject];
-
-    if (!data) {
-        tutorial.innerHTML =
-            "<p>Tutorial is not available for this object yet.</p>";
-        return;
-    }
-
+    currentSteps = projects[selectedObject][index].steps;
     currentStep = 0;
 
-    tutorial.innerHTML = `
-        <h2>${data.title}</h2>
-        <p id="stepText"></p>
-        <p id="stepNumber"></p>
-
-        <button onclick="previousStep()">Previous</button>
-        <button onclick="nextStep()">Next Step</button>
-    `;
-
-    showCurrentStep();
+    tutorial.scrollIntoView({ behavior: "smooth" });
+    displayStep();
 }
 
-function showCurrentStep() {
-    const data = tutorials[selectedObject];
+function displayStep() {
+    const stepNumber = currentStep + 1;
 
-    document.getElementById("stepText").textContent =
-        data.steps[currentStep];
+    // Simple step illustration
+    const picture = `
+        <svg viewBox="0 0 300 180"
+             width="100%" height="180"
+             xmlns="http://www.w3.org/2000/svg">
+            <rect width="300" height="180" rx="15"
+                  fill="#e8f5e9"/>
+            <circle cx="150" cy="75" r="48"
+                    fill="#a5d6a7"/>
+            <text x="150" y="88"
+                  text-anchor="middle"
+                  font-size="45">♻️</text>
+            <text x="150" y="155"
+                  text-anchor="middle"
+                  font-size="16"
+                  fill="#1b5e20">
+                Step ${stepNumber}
+            </text>
+        </svg>
+    `;
 
-    document.getElementById("stepNumber").textContent =
-        "Step " + (currentStep + 1) + " of " + data.steps.length;
+    tutorial.innerHTML = `
+        <div class="tutorial-card">
+            <h2>Step ${stepNumber} of ${currentSteps.length}</h2>
+
+            <div class="tutorial-picture">
+                ${picture}
+            </div>
+
+            <p>${currentSteps[currentStep]}</p>
+
+            <button onclick="previousStep()"
+                ${currentStep === 0 ? "disabled" : ""}>
+                Previous Step
+            </button>
+
+            <button onclick="nextStep()">
+                ${currentStep === currentSteps.length - 1
+                    ? "Finish"
+                    : "Next Step"}
+            </button>
+        </div>
+    `;
 }
 
 function nextStep() {
-    const data = tutorials[selectedObject];
-
-    if (currentStep < data.steps.length - 1) {
+    if (currentStep < currentSteps.length - 1) {
         currentStep++;
-        showCurrentStep();
+        displayStep();
     } else {
         tutorial.innerHTML = `
             <h2>🎉 Project Completed!</h2>
-            <p>Great job! You turned waste into wonder!</p>
+            <p>Great job! You gave waste a new life.</p>
         `;
     }
 }
@@ -211,7 +237,7 @@ function nextStep() {
 function previousStep() {
     if (currentStep > 0) {
         currentStep--;
-        showCurrentStep();
+        displayStep();
     }
 }
 
