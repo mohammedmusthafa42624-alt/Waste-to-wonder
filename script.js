@@ -1,3 +1,4 @@
+// WASTE TO WONDER
 
 const upload = document.getElementById("wasteImage");
 const preview = document.getElementById("preview");
@@ -6,117 +7,186 @@ const tutorial = document.getElementById("tutorial");
 
 let model = null;
 let selectedObject = "default";
-let shownIdeas = [];
 let currentIdeas = [];
+let shownIdeas = [];
 
+// OBJECT DETAILS
+const basicDetails = {
+    bottle: {
+        name: "Bottle",
+        category: "Plastic Object",
+        details: "Used to store water and other drinks.",
+        materials: "Plastic"
+    },
+    cardboard: {
+        name: "Cardboard",
+        category: "Paper Product",
+        details: "Used for boxes and packaging.",
+        materials: "Paper"
+    },
+    paper: {
+        name: "Paper",
+        category: "Paper Product",
+        details: "Used for writing, printing and drawing.",
+        materials: "Paper"
+    },
+    spoon: {
+        name: "Spoon",
+        category: "Household Object",
+        details: "Used for eating and serving food.",
+        materials: "Plastic or metal"
+    },
+    clothes: {
+        name: "Clothes",
+        category: "Fabric Object",
+        details: "Used to cover and protect the body.",
+        materials: "Cotton or other fabrics"
+    },
+    can: {
+        name: "Can",
+        category: "Metal Object",
+        details: "Used to store food and drinks.",
+        materials: "Metal"
+    },
+    jar: {
+        name: "Jar",
+        category: "Container",
+        details: "Used to store food and other items.",
+        materials: "Glass or plastic"
+    },
+    wood: {
+        name: "Wood",
+        category: "Natural Material",
+        details: "Used to make furniture and other objects.",
+        materials: "Wood"
+    },
+    phone: {
+        name: "Phone",
+        category: "Electronic Object",
+        details: "Used for communication and other digital activities.",
+        materials: "Glass, plastic and metals"
+    },
+    default: {
+        name: "Unknown Object",
+        category: "Other Object",
+        details: "The object could not be identified clearly.",
+        materials: "Unknown"
+    }
+};
+
+// REUSE IDEAS
 const projects = {
     bottle: [
-        ["Flower Pot", ["Bottle", "Soil", "Plant"], ["Clean the bottle.", "Use a safe pre-cut container.", "Add soil and a plant."]],
-        ["Pen Holder", ["Bottle", "Paper", "Glue"], ["Clean the bottle.", "Decorate it with paper.", "Store pens."]],
-        ["Bird Feeder", ["Bottle", "Bird seed"], ["Clean the bottle.", "Ask an adult to prepare it safely.", "Add bird seed."]],
-        ["Watering Can", ["Bottle", "Water"], ["Clean the bottle.", "Ask an adult to prepare the cap.", "Use it to water plants."]],
-        ["Storage Container", ["Bottle", "Labels"], ["Clean and dry the bottle.", "Use a safe container.", "Add a label."]],
-        ["Desk Organizer", ["Bottle", "Decorations"], ["Clean the bottle.", "Decorate it.", "Organize stationery."]],
-        ["Mini Herb Garden", ["Bottle", "Soil", "Seeds"], ["Use a safe prepared container.", "Add soil.", "Plant seeds."]],
-        ["Gift Wrapper", ["Bottle", "Ribbon"], ["Clean the bottle.", "Decorate it.", "Use it as gift packaging."]],
-        ["Piggy Bank", ["Bottle", "Paper"], ["Clean the bottle.", "Ask an adult to prepare an opening.", "Decorate it."]],
-        ["Table Decoration", ["Bottle", "Paint"], ["Clean the bottle.", "Decorate the outside.", "Let it dry."]]
+        ["Bottle Planter", ["Plastic bottle", "Soil", "Plant"], ["Clean the bottle.", "Ask an adult to help prepare it safely.", "Add soil and a small plant."]],
+        ["Bottle Pen Stand", ["Plastic bottle", "Colors"], ["Clean and dry the bottle.", "Ask an adult to help with any cutting.", "Decorate it and use it as a pen stand."]],
+        ["Bottle Flower Vase", ["Plastic bottle", "Paint"], ["Clean the bottle.", "Decorate its outside.", "Place artificial flowers inside."]],
+        ["Bottle Storage", ["Plastic bottle", "Labels"], ["Clean and dry the bottle.", "Add a label.", "Store suitable small items."]],
+        ["Bottle Bird Feeder", ["Plastic bottle", "Bird seed"], ["Ask an adult to help prepare it.", "Use only safe, smooth edges.", "Place suitable bird food inside."]],
+        ["Bottle Watering Can", ["Plastic bottle", "Water"], ["Clean the bottle.", "Ask an adult to make small holes in the cap.", "Use it to water plants."]],
+        ["Bottle Desk Organizer", ["Plastic bottle", "Decorations"], ["Clean the bottle.", "Decorate it.", "Use it to organize stationery."]],
+        ["Bottle Piggy Bank", ["Plastic bottle", "Paper"], ["Clean the bottle.", "Ask an adult to prepare the opening.", "Decorate and use it for saving coins."]],
+        ["Bottle Garden Decor", ["Plastic bottle", "Paint"], ["Clean the bottle.", "Decorate it with paint.", "Display it near a garden."]],
+        ["Bottle Art", ["Plastic bottle", "Paint"], ["Clean the bottle.", "Use paint to create patterns.", "Display your artwork."]]
     ],
 
     cardboard: [
-        ["Desk Organizer", ["Cardboard", "Glue"], ["Arrange cardboard sections.", "Ask an adult to cut if needed.", "Decorate it."]],
-        ["Toy House", ["Cardboard box", "Colors"], ["Take a clean box.", "Draw doors and windows.", "Decorate it."]],
-        ["Photo Frame", ["Cardboard", "Photo"], ["Draw a frame.", "Ask an adult to cut it.", "Attach a photo."]],
-        ["Storage Box", ["Cardboard box", "Paper"], ["Clean the box.", "Cover it with paper.", "Add a label."]],
-        ["Book Organizer", ["Cardboard", "Paper"], ["Arrange cardboard dividers.", "Decorate them.", "Organize books."]],
-        ["Laptop Stand Model", ["Cardboard"], ["Draw a simple stand design.", "Ask an adult to prepare pieces.", "Use only for lightweight items."]],
-        ["Wall Art", ["Cardboard", "Colors"], ["Draw a design.", "Color it.", "Display your artwork."]],
-        ["Gift Box", ["Cardboard", "Ribbon"], ["Fold a prepared cardboard box.", "Decorate it.", "Add a ribbon."]],
-        ["Table Nameplate", ["Cardboard", "Markers"], ["Fold cardboard into a stand.", "Write a name.", "Decorate it."]],
-        ["Drawer Dividers", ["Cardboard"], ["Measure the drawer.", "Ask an adult to cut pieces.", "Arrange dividers."]]
+        ["Cardboard Organizer", ["Cardboard box", "Glue"], ["Collect clean cardboard.", "Arrange it into sections.", "Use it to organize stationery."]],
+        ["Cardboard Photo Frame", ["Cardboard", "Colors"], ["Draw a frame shape.", "Ask an adult to help cut it.", "Decorate and display a photo."]],
+        ["Cardboard Pen Holder", ["Cardboard tube", "Glue"], ["Take a clean cardboard tube.", "Decorate it.", "Use it as a pen holder."]],
+        ["Cardboard Mini House", ["Cardboard", "Colors"], ["Draw a simple house design.", "Ask an adult to help cut pieces.", "Join and decorate the pieces."]],
+        ["Cardboard Wall Art", ["Cardboard", "Paint"], ["Draw a design.", "Color the cardboard.", "Display it on a wall."]],
+        ["Cardboard Storage Box", ["Cardboard box", "Paper"], ["Clean the box.", "Cover it with decorative paper.", "Store suitable items."]],
+        ["Cardboard Bookmark", ["Cardboard", "Markers"], ["Cut a bookmark with adult help.", "Decorate it.", "Use it in a book."]],
+        ["Cardboard Toy", ["Cardboard", "Colors"], ["Draw a simple toy design.", "Ask an adult to help prepare pieces.", "Decorate and assemble it."]],
+        ["Cardboard Desk Tray", ["Cardboard", "Glue"], ["Collect clean cardboard.", "Arrange it into a tray shape.", "Use it to hold stationery."]],
+        ["Cardboard Collage", ["Cardboard", "Paper"], ["Collect clean paper pieces.", "Arrange them into a picture.", "Glue them onto cardboard."]]
     ],
 
     paper: [
-        ["Paper Flowers", ["Waste paper", "Glue"], ["Draw flower shapes.", "Ask for help cutting.", "Assemble the flowers."]],
-        ["Greeting Card", ["Paper", "Colors"], ["Fold paper.", "Draw a design.", "Write a greeting."]],
-        ["Paper Basket", ["Waste paper", "Glue"], ["Roll paper strips.", "Arrange them into a basket.", "Secure with glue."]],
-        ["Paper Decorations", ["Paper", "String"], ["Draw shapes.", "Cut with safe scissors.", "Hang decorations safely."]],
-        ["Paper Bookmark", ["Paper", "Colors"], ["Prepare a bookmark shape.", "Draw a design.", "Decorate it."]],
-        ["Paper Beads", ["Paper", "Glue"], ["Prepare paper strips.", "Roll them into beads.", "Secure with glue."]],
-        ["Gift Tags", ["Paper", "String"], ["Cut tag shapes.", "Write messages.", "Attach string."]],
-        ["Paper Mosaic", ["Paper", "Glue"], ["Tear paper into small pieces.", "Arrange a pattern.", "Glue onto paper."]],
-        ["Mini Notebook", ["Waste paper", "Staples"], ["Arrange clean paper.", "Ask an adult to bind it.", "Create a cover."]],
-        ["Paper Wall Collage", ["Paper", "Glue"], ["Choose a theme.", "Arrange paper pieces.", "Attach them to a backing sheet."]]
+        ["Paper Flowers", ["Old paper", "Glue"], ["Fold paper into flower shapes.", "Secure them with glue.", "Arrange the flowers."]],
+        ["Paper Gift Bag", ["Old paper", "Glue"], ["Fold paper into a bag shape.", "Secure the edges.", "Decorate the bag."]],
+        ["Paper Wall Art", ["Old paper", "Colors"], ["Draw a design.", "Color the paper.", "Display your artwork."]],
+        ["Paper Bookmark", ["Old paper", "Markers"], ["Cut a bookmark shape.", "Decorate it.", "Use it in a book."]],
+        ["Paper Greeting Card", ["Old paper", "Colors"], ["Fold the paper.", "Draw a greeting design.", "Write a message."]],
+        ["Paper Origami", ["Old paper"], ["Choose a simple origami design.", "Fold the paper carefully.", "Display your creation."]],
+        ["Paper Collage", ["Old paper", "Glue"], ["Tear paper into small pieces.", "Arrange them into a picture.", "Glue them onto a sheet."]],
+        ["Paper Notebook Cover", ["Old paper", "Notebook"], ["Choose clean paper.", "Cover the notebook.", "Decorate the cover."]],
+        ["Paper Gift Decoration", ["Old paper", "Ribbon"], ["Fold paper into decorations.", "Attach them to a gift.", "Arrange neatly."]],
+        ["Paper Basket", ["Old paper", "Glue"], ["Roll paper into strips.", "Ask an adult for help assembling the basket.", "Use it for lightweight items."]]
     ],
 
     spoon: [
-        ["Decorative Flower", ["Clean plastic spoons", "Cardboard"], ["Arrange spoons in a flower pattern.", "Ask an adult to help assemble.", "Display it."]],
-        ["Wall Art", ["Clean spoons", "Cardboard"], ["Arrange a pattern.", "Ask an adult to attach pieces.", "Display safely."]],
-        ["Craft Decoration", ["Spoons", "Colors"], ["Clean the spoons.", "Decorate them.", "Let them dry."]],
-        ["Mini Display", ["Spoons", "Container"], ["Clean the spoons.", "Arrange them in a container.", "Decorate it."]],
-        ["Colorful Sculpture", ["Spoons", "Cardboard"], ["Plan a design.", "Arrange the spoons.", "Ask an adult to assemble."]],
-        ["Photo Decor", ["Spoons", "Photo frame"], ["Clean the spoons.", "Arrange around a frame.", "Ask an adult to attach them."]],
-        ["Garden Marker", ["Reusable spoon", "Marker"], ["Clean the spoon.", "Write a plant name.", "Place it safely in a pot."]],
-        ["Craft Mobile", ["Spoons", "String"], ["Decorate the spoons.", "Ask an adult to assemble a hanging display.", "Hang safely."]],
-        ["Color Display", ["Spoons", "Paint"], ["Clean the spoons.", "Paint them.", "Display after drying."]],
-        ["Art Pattern", ["Spoons", "Cardboard"], ["Arrange a pattern.", "Ask an adult to attach it.", "Display your artwork."]]
+        ["Spoon Wall Art", ["Clean old spoons", "Cardboard"], ["Clean the spoons.", "Arrange them into a design.", "Ask an adult to help attach them securely."]],
+        ["Spoon Plant Label", ["Clean spoon", "Marker"], ["Clean the spoon.", "Write a plant name on it.", "Place it near a plant."]],
+        ["Spoon Decoration", ["Clean spoon", "Paint"], ["Clean and dry the spoon.", "Decorate the handle.", "Display it safely."]],
+        ["Spoon Craft Display", ["Clean spoons", "Cardboard"], ["Arrange the spoons.", "Create a pattern.", "Ask an adult to help secure the display."]],
+        ["Spoon Holder", ["Clean spoons", "Container"], ["Clean the spoons.", "Choose a suitable container.", "Store them neatly."]],
+        ["Spoon Garden Decor", ["Clean spoon", "Paint"], ["Clean the spoon.", "Paint a simple design.", "Display it near a plant."]],
+        ["Spoon Art", ["Clean spoon", "Colors"], ["Choose a simple design.", "Decorate the spoon.", "Display your artwork."]],
+        ["Spoon Gift Decor", ["Clean spoon", "Ribbon"], ["Clean the spoon.", "Add a ribbon decoration.", "Use it as gift decoration."]],
+        ["Spoon Collection Display", ["Clean spoons", "Display stand"], ["Clean the spoons.", "Arrange them on a display stand.", "Keep them in a safe place."]],
+        ["Spoon Storage", ["Clean spoons", "Container"], ["Wash and dry the spoons.", "Arrange them in a container.", "Keep them ready for reuse."]]
     ],
 
     clothes: [
-        ["Reusable Bag", ["Old cloth", "Thread"], ["Choose clean cloth.", "Ask an adult to sew the edges.", "Add handles."]],
-        ["Cushion Cover", ["Old cloth", "Cushion"], ["Choose clean fabric.", "Measure the cushion.", "Ask an adult to sew it."]],
-        ["Cleaning Cloth", ["Old cotton cloth"], ["Wash the cloth.", "Ask an adult to prepare suitable pieces.", "Use for cleaning."]],
-        ["Patchwork Art", ["Fabric pieces", "Thread"], ["Arrange a pattern.", "Join pieces with adult help.", "Display your art."]],
-        ["Fabric Bookmark", ["Old fabric", "Cardboard"], ["Prepare a cardboard strip.", "Cover it with fabric.", "Let it dry."]],
-        ["Fabric Gift Wrap", ["Old cloth"], ["Wash the cloth.", "Use it to wrap a gift.", "Tie a reusable knot."]],
-        ["Decorative Pillow", ["Old cloth", "Cushion filling"], ["Choose clean fabric.", "Ask an adult to sew a cover.", "Fill it safely."]],
-        ["Cloth Wall Art", ["Fabric", "Cardboard"], ["Arrange fabric pieces.", "Attach them to cardboard.", "Display safely."]],
-        ["Reusable Pouch", ["Old cloth", "Thread"], ["Choose clean fabric.", "Ask an adult to sew a pouch.", "Store small items."]],
-        ["Fabric Garland", ["Fabric scraps", "String"], ["Arrange clean fabric pieces.", "Ask an adult to prepare them.", "Attach to string."]]
+        ["Old T-shirt Bag", ["Old T-shirt"], ["Choose a clean old T-shirt.", "Ask an adult to help with any cutting.", "Use it as a reusable bag."]],
+        ["Fabric Cushion Cover", ["Old clothes", "Cushion"], ["Choose clean fabric.", "Ask an adult to help sew it.", "Use it as a cushion cover."]],
+        ["Fabric Bookmark", ["Old fabric", "Ribbon"], ["Choose a clean fabric piece.", "Fold it neatly.", "Use it as a bookmark."]],
+        ["Cloth Decoration", ["Old fabric", "Glue"], ["Choose colorful fabric.", "Arrange it into a design.", "Use it for decoration."]],
+        ["Reusable Cleaning Cloth", ["Old cotton clothes"], ["Wash the old clothes.", "Allow them to dry.", "Use suitable pieces for cleaning."]],
+        ["Fabric Wall Art", ["Old fabric", "Frame"], ["Choose clean fabric.", "Arrange it in a frame.", "Display it."]],
+        ["Fabric Gift Wrap", ["Old cloth"], ["Choose a clean cloth.", "Wrap a suitable gift.", "Tie it neatly."]],
+        ["Fabric Doll Decoration", ["Old fabric", "Buttons"], ["Choose clean fabric.", "Plan a simple decoration.", "Ask an adult to help with sewing."]],
+        ["Cloth Storage Pouch", ["Old fabric", "Thread"], ["Choose clean fabric.", "Ask an adult to help sew a pouch.", "Store lightweight items."]],
+        ["Fabric Patch Art", ["Old fabric", "Glue"], ["Collect clean fabric pieces.", "Arrange them into a pattern.", "Create a fabric collage."]]
     ],
 
     can: [
-        ["Pencil Holder", ["Clean can", "Paper"], ["Ask an adult to check for sharp edges.", "Cover the outside.", "Store pencils."]],
-        ["Planter Cover", ["Clean can", "Plant pot"], ["Use a can with no sharp edges.", "Place a pot inside.", "Decorate it."]],
-        ["Storage Container", ["Clean can", "Labels"], ["Check for sharp edges with an adult.", "Clean and dry it.", "Add a label."]],
-        ["Desk Decoration", ["Clean can", "Colors"], ["Clean the can.", "Decorate the outside.", "Let it dry."]],
-        ["Art Display", ["Clean can", "Paper"], ["Cover the outside.", "Draw a design.", "Display it."]],
-        ["Gift Container", ["Clean can", "Ribbon"], ["Use only a safe can.", "Decorate it.", "Add a ribbon."]],
-        ["Mini Planter Cover", ["Clean can", "Small pot"], ["Use a safe can.", "Place a pot inside.", "Display it."]],
-        ["Table Organizer", ["Clean can", "Labels"], ["Clean the can.", "Add labels.", "Organize supplies."]],
-        ["Pencil Set Holder", ["Clean can", "Paper"], ["Check for sharp edges with an adult.", "Decorate it.", "Arrange stationery."]],
-        ["Decorative Display", ["Clean can", "Paint"], ["Clean the can.", "Decorate the outside.", "Let it dry."]]
+        ["Can Pencil Holder", ["Clean can", "Paint"], ["Make sure an adult checks the can for sharp edges.", "Decorate only if it is safe to handle.", "Use it as a pencil holder."]],
+        ["Can Plant Pot", ["Clean can", "Soil"], ["Use a can with no sharp edges.", "Ask an adult to prepare drainage safely.", "Add soil and a plant."]],
+        ["Can Decoration", ["Clean can", "Paint"], ["Choose a safe can.", "Ask an adult to check its edges.", "Decorate the outside."]],
+        ["Can Storage", ["Clean can"], ["Choose a safe container.", "Clean and dry it.", "Store suitable items."]],
+        ["Can Desk Organizer", ["Clean can", "Colors"], ["Ask an adult to check the edges.", "Decorate the outside.", "Use it to organize stationery."]],
+        ["Can Garden Decor", ["Clean can", "Paint"], ["Choose a safe can.", "Decorate its outside.", "Display it in a suitable place."]],
+        ["Can Art Display", ["Clean can", "Paint"], ["Clean the can.", "Ask an adult to check it.", "Create a decorative display."]],
+        ["Can Flower Holder", ["Clean can", "Artificial flowers"], ["Choose a safe can.", "Decorate its outside.", "Place artificial flowers inside."]],
+        ["Can Stationery Box", ["Clean can"], ["Use a can with safe edges.", "Clean it thoroughly.", "Store stationery."]],
+        ["Can Gift Holder", ["Clean can", "Ribbon"], ["Choose a safe can.", "Decorate it.", "Use it to hold a small gift."]]
     ],
 
     jar: [
-        ["Flower Vase", ["Clean jar", "Flowers"], ["Wash the jar.", "Dry it.", "Add flowers."]],
-        ["Storage Jar", ["Clean jar", "Label"], ["Wash and dry the jar.", "Add a label.", "Store suitable items."]],
-        ["Desk Organizer", ["Clean jar", "Decorations"], ["Clean the jar.", "Decorate it.", "Store stationery."]],
-        ["Plant Display", ["Jar", "Small plant pot"], ["Clean the jar.", "Place a small pot inside.", "Display it."]],
-        ["Gift Container", ["Jar", "Paper", "Ribbon"], ["Clean the jar.", "Decorate it.", "Add a ribbon."]],
-        ["Button Storage", ["Clean jar", "Buttons"], ["Wash and dry the jar.", "Add buttons.", "Close the lid."]],
-        ["Craft Supply Jar", ["Clean jar", "Labels"], ["Clean the jar.", "Add a label.", "Store craft supplies."]],
-        ["Decorative Jar", ["Clean jar", "Paint"], ["Clean the jar.", "Decorate the outside.", "Let it dry."]],
-        ["Pebble Display", ["Jar", "Clean pebbles"], ["Clean the jar.", "Add clean pebbles.", "Display it safely."]],
-        ["Gift Packaging", ["Jar", "Ribbon"], ["Clean the jar.", "Place a suitable gift inside.", "Decorate it."]]
+        ["Jar Flower Vase", ["Clean jar", "Flowers"], ["Wash and dry the jar.", "Decorate its outside.", "Place flowers inside."]],
+        ["Jar Storage", ["Clean jar", "Label"], ["Wash and dry the jar.", "Add a label.", "Store suitable items."]],
+        ["Jar Pencil Holder", ["Clean jar", "Paint"], ["Clean the jar.", "Decorate the outside.", "Use it for stationery."]],
+        ["Jar Decoration", ["Clean jar", "Colors"], ["Clean the jar.", "Decorate its outside.", "Display it safely."]],
+        ["Jar Gift Container", ["Clean jar", "Ribbon"], ["Clean and dry the jar.", "Decorate it.", "Use it as a gift container."]],
+        ["Jar Plant Display", ["Clean jar", "Small plant"], ["Choose a suitable jar.", "Add a suitable plant.", "Display it in a safe place."]],
+        ["Jar Art", ["Clean jar", "Paint"], ["Clean the jar.", "Paint a design on the outside.", "Allow it to dry."]],
+        ["Jar Desk Organizer", ["Clean jar"], ["Wash and dry the jar.", "Decorate it if desired.", "Use it to store stationery."]],
+        ["Jar Button Storage", ["Clean jar", "Buttons"], ["Clean the jar.", "Add buttons.", "Close the lid and store it."]],
+        ["Jar Decoration Display", ["Clean jar", "Decorations"], ["Clean the jar.", "Add safe decorations.", "Display it carefully."]]
     ],
 
     wood: [
-        ["Display Stand", ["Smooth wood", "Adult help"], ["Choose safe smooth wood.", "Ask an adult to prepare it.", "Display a lightweight item."]],
-        ["Photo Display", ["Wood", "Photo"], ["Choose a safe wood piece.", "Ask an adult to prepare it.", "Add a photo."]],
-        ["Desk Organizer", ["Wood pieces"], ["Collect smooth wood pieces.", "Ask an adult to assemble them.", "Store stationery."]],
-        ["Garden Sign", ["Wood", "Paint"], ["Choose a safe board.", "Paint a label.", "Let it dry."]],
-        ["Decorative Art", ["Wood", "Paint"], ["Clean the wood.", "Draw a design.", "Display your artwork."]],
-        ["Bookend Decoration", ["Smooth wood", "Paint"], ["Choose a stable prepared piece.", "Decorate it.", "Use it as a bookend with adult help."]],
-        ["Plant Label", ["Wood", "Marker"], ["Choose a smooth prepared stick.", "Write a plant name.", "Place it in a pot."]],
-        ["Wall Display", ["Wood", "Photo"], ["Choose a prepared wood piece.", "Add a photo with adult help.", "Display safely."]],
-        ["Table Decoration", ["Wood", "Paint"], ["Clean the wood.", "Paint a design.", "Let it dry."]],
-        ["Small Display Tray", ["Prepared wood", "Decorations"], ["Use a smooth prepared piece.", "Decorate it.", "Display lightweight objects."]]
+        ["Wooden Photo Display", ["Clean wood", "Photo"], ["Choose a smooth, safe wood piece.", "Ask an adult to help prepare it.", "Display a photo."]],
+        ["Wooden Plant Marker", ["Wood piece", "Marker"], ["Choose a smooth wood piece.", "Write a plant name.", "Place it near a plant."]],
+        ["Wooden Desk Decor", ["Wood piece", "Paint"], ["Clean the wood.", "Decorate it.", "Display it on a desk."]],
+        ["Wooden Wall Art", ["Wood piece", "Paint"], ["Choose a safe wood piece.", "Create a design.", "Ask an adult to help mount it."]],
+        ["Wooden Storage Box", ["Wood pieces"], ["Use a ready-made safe box.", "Decorate it.", "Store suitable items."]],
+        ["Wooden Garden Decor", ["Wood piece", "Paint"], ["Choose weather-suitable wood.", "Decorate it.", "Display it in a garden."]],
+        ["Wooden Bookmark", ["Thin smooth wood", "Marker"], ["Choose a smooth, thin piece.", "Decorate it.", "Use it as a bookmark."]],
+        ["Wooden Art Display", ["Wood piece", "Colors"], ["Clean the wood.", "Paint a design.", "Display your artwork."]],
+        ["Wooden Table Decor", ["Wood piece", "Paint"], ["Choose a stable wood piece.", "Decorate it.", "Display it safely."]],
+        ["Wooden Gift Decor", ["Wood piece", "Ribbon"], ["Choose a smooth wood piece.", "Add decoration.", "Use it as a gift decoration."]]
+    ],
+
+    phone: [
+        ["Phone Stand", ["Old phone", "Ready-made stand"], ["Make sure the phone is switched off if it is damaged.", "Use a suitable ready-made stand.", "Reuse the phone as a display device only if it works safely."]],
+        ["Electronic Recycling", ["Old phone"], ["Do not open the phone.", "Take it to an authorized e-waste collection center.", "Follow the center's recycling instructions."]],
+        ["Phone Donation", ["Working old phone"], ["Check that the phone works.", "Remove personal information with adult guidance.", "Donate it through a trusted organization."]]
     ],
 
     default: [
-        ["Recycled Art", ["Clean waste material", "Colors"], ["Identify the material.", "Clean it safely.", "Decorate it."]],
-        ["Storage Organizer", ["Suitable container", "Labels"], ["Choose a safe container.", "Decorate it.", "Add a label."]],
         ["Home Decoration", ["Clean waste material", "Decorations"], ["Clean the material.", "Choose a design.", "Decorate it safely."]],
         ["Creative Craft", ["Waste material", "Paper", "Glue"], ["Collect clean materials.", "Plan a craft.", "Assemble safely."]],
         ["Garden Decoration", ["Suitable material", "Paint"], ["Choose weather-safe material.", "Clean it.", "Decorate it."]],
@@ -127,185 +197,246 @@ const projects = {
         ["Garden Marker", ["Suitable material", "Marker"], ["Choose a safe material.", "Write a plant name.", "Place it near a pot."]]
     ]
 };
+
+// LOAD AI MODEL
 async function loadModel() {
-    result.textContent = "Loading image recognition model...";
+    result.innerHTML = "<p>Loading object recognition...</p>";
 
     try {
+        if (typeof mobilenet === "undefined") {
+            result.innerHTML = "<p>AI library not loaded. Check your internet connection.</p>";
+            return;
+        }
+
         model = await mobilenet.load();
-        result.textContent = "Ready! Upload a waste object.";
+        result.innerHTML = "<p>Ready! Upload a waste object photo.</p>";
     } catch (error) {
-        result.textContent = "Model loading failed. Check your internet.";
+        console.error(error);
+        result.innerHTML = "<p>Could not load the model. Please refresh the page.</p>";
     }
 }
 
-function startProject() {
-    document.getElementById("create").scrollIntoView({
-        behavior: "smooth"
-    });
-}
-
+// PREVIEW IMAGE
 function previewImage(event) {
     const file = event.target.files[0];
+
     if (!file) return;
 
     preview.src = URL.createObjectURL(file);
     preview.style.display = "block";
 
-    result.textContent = "Image uploaded. Click Find Creative Ideas.";
+    result.innerHTML = "";
     tutorial.innerHTML = "";
+    currentIdeas = [];
     shownIdeas = [];
 }
 
-function identifyObject(label) {
-    const rules = {
-        bottle: ["bottle", "flask"],
-        cardboard: ["carton", "cardboard", "box"],
-        paper: ["paper", "newspaper"],
-        spoon: ["spoon"],
-        clothes: ["shirt", "jersey", "jean", "clothing", "coat"],
-        can: ["can", "tin"],
-        jar: ["jar"],
-        wood: ["wood", "timber", "wooden"]
-    };
-
-    for (const [category, words] of Object.entries(rules)) {
-        if (words.some(word => label.includes(word))) {
-            return category;
-        }
-    }
-
-    return "default";
-}
-
-async function getIdeas() {
-    if (!upload.files.length) {
-        result.textContent = "Please upload an image first!";
+// IDENTIFY OBJECT
+async function identifyObject() {
+    if (!upload.files || !upload.files[0]) {
+        alert("Please upload an image first!");
         return;
     }
 
     if (!model) {
-        result.textContent = "Please wait. Model is loading...";
+        alert("AI model is still loading. Please wait.");
         return;
     }
 
-    result.textContent = "Recognizing object...";
+    result.innerHTML = "<p>Identifying object...</p>";
+    tutorial.innerHTML = "";
 
     try {
         const predictions = await model.classify(preview);
+
+        console.log(predictions);
+
         const label = predictions[0].className.toLowerCase();
 
-        selectedObject = identifyObject(label);
+        if (
+            label.includes("water bottle") ||
+            label.includes("bottle")
+        ) {
+            selectedObject = "bottle";
+        } else if (
+            label.includes("carton") ||
+            label.includes("cardboard") ||
+            label.includes("box")
+        ) {
+            selectedObject = "cardboard";
+        } else if (
+            label.includes("paper") ||
+            label.includes("envelope")
+        ) {
+            selectedObject = "paper";
+        } else if (
+            label.includes("spoon")
+        ) {
+            selectedObject = "spoon";
+        } else if (
+            label.includes("jersey") ||
+            label.includes("shirt") ||
+            label.includes("clothing") ||
+            label.includes("sweatshirt")
+        ) {
+            selectedObject = "clothes";
+        } else if (
+            label.includes("can") ||
+            label.includes("tin")
+        ) {
+            selectedObject = "can";
+        } else if (
+            label.includes("jar") ||
+            label.includes("bottle")
+        ) {
+            selectedObject = "jar";
+        } else if (
+            label.includes("wood")
+        ) {
+            selectedObject = "wood";
+        } else if (
+            label.includes("cellular telephone") ||
+            label.includes("mobile phone") ||
+            label.includes("smartphone") ||
+            label.includes("telephone")
+        ) {
+            selectedObject = "phone";
+        } else {
+            selectedObject = "default";
+        }
+
+        const object = basicDetails[selectedObject];
+
+        result.innerHTML = `
+            <h2>Detected Object: ${escapeHTML(object.name)}</h2>
+            <p>AI Prediction: ${escapeHTML(label)}</p>
+            <p>Confidence: ${(predictions[0].probability * 100).toFixed(1)}%</p>
+            <button onclick="showBasicDetails()">View Details</button>
+            <button onclick="startProject()">Show Reuse Ideas</button>
+        `;
+
+        currentIdeas = projects[selectedObject] || projects.default;
         shownIdeas = [];
 
-        displayIdeas(label);
     } catch (error) {
-        result.textContent = "Could not recognize the image.";
+        console.error(error);
+        result.innerHTML = "<p>Could not identify the image. Please try another clear photo.</p>";
     }
 }
 
-function displayIdeas(label) {
-    const items = projects[selectedObject] || projects.default;
-
-    currentIdeas = [...items];
+// SHOW BASIC DETAILS
+function showBasicDetails() {
+    const object = basicDetails[selectedObject];
 
     result.innerHTML = `
-        <h2>Detected Object</h2>
-        <p>${escapeHTML(label || selectedObject)}</p>
-        <h2>♻️ Reuse Ideas</h2>
-        <div id="ideaList"></div>
+        <h2>Object Details</h2>
+        <p><strong>Object:</strong> ${escapeHTML(object.name)}</p>
+        <p><strong>Category:</strong> ${escapeHTML(object.category)}</p>
+        <p><strong>About:</strong> ${escapeHTML(object.details)}</p>
+        <p><strong>Materials:</strong> ${escapeHTML(object.materials)}</p>
+        <button onclick="identifyAgain()">Back</button>
+        <button onclick="startProject()">Show Reuse Ideas</button>
+    `;
+}
+
+// BACK TO DETECTION RESULT
+function identifyAgain() {
+    const object = basicDetails[selectedObject];
+
+    result.innerHTML = `
+        <h2>Detected Object: ${escapeHTML(object.name)}</h2>
+        <button onclick="showBasicDetails()">View Details</button>
+        <button onclick="startProject()">Show Reuse Ideas</button>
+    `;
+}
+
+// START REUSE PROJECTS
+function startProject() {
+    currentIdeas = projects[selectedObject] || projects.default;
+    shownIdeas = [];
+
+    result.innerHTML = `
+        <h2>Reuse Ideas for ${escapeHTML(basicDetails[selectedObject].name)}</h2>
         <button onclick="generateMoreIdeas()">Generate More Ideas</button>
     `;
 
-    renderIdeas();
-    tutorial.innerHTML = "";
+    tutorial.innerHTML = `
+        <div id="ideasList"></div>
+    `;
+
+    generateMoreIdeas();
 }
 
-function renderIdeas() {
-    const list = document.getElementById("ideaList");
-
-    const available = currentIdeas
-        .map((project, index) => index)
-        .filter(index => !shownIdeas.includes(index));
-
-    const selected = available.slice(0, 5);
-
-    selected.forEach(index => shownIdeas.push(index));
-
-    list.innerHTML = selected.map(index => `
-        <div class="idea-card">
-            <h3>${escapeHTML(currentIdeas[index][0])}</h3>
-            <button onclick="showTutorial(${index})">
-                How to Make
-            </button>
-        </div>
-    `).join("");
-
-    if (shownIdeas.length >= currentIdeas.length) {
-        list.innerHTML += "<p>All available ideas shown!</p>";
-    }
-}
-
+// GENERATE MORE IDEAS
 function generateMoreIdeas() {
-    if (shownIdeas.length >= currentIdeas.length) {
-        alert("All available ideas have been shown!");
+    const list = document.getElementById("ideasList");
+
+    if (!list) return;
+
+    const remaining = currentIdeas.filter(
+        idea => !shownIdeas.includes(idea)
+    );
+
+    if (remaining.length === 0) {
+        list.innerHTML += "<p>No more ideas available.</p>";
         return;
     }
 
-    renderIdeas();
+    const selected = remaining.slice(0, 5);
+
+    selected.forEach(idea => {
+        shownIdeas.push(idea);
+
+        list.innerHTML += `
+            <div class="idea-card">
+                <h3>${escapeHTML(idea[0])}</h3>
+                <p><strong>Materials:</strong> ${idea[1].map(escapeHTML).join(", ")}</p>
+                <button onclick="showTutorial('${escapeHTML(idea[0])}')">
+                    View Tutorial
+                </button>
+            </div>
+        `;
+    });
 }
 
-function useManualObject() {
-    const input = document.getElementById("manualObject");
+// SHOW TUTORIAL
+function showTutorial(projectName) {
+    const idea = currentIdeas.find(item => item[0] === projectName);
 
-    if (!input) {
-        alert("Manual object input is not available in your HTML yet.");
-        return;
-    }
-
-    const name = input.value.trim().toLowerCase();
-
-    if (!name) {
-        alert("Enter an object name.");
-        return;
-    }
-
-    selectedObject = identifyObject(name);
-    shownIdeas = [];
-    displayIdeas(name);
-}
-
-function showTutorial(index) {
-    const project = currentIdeas[index];
-
-    if (!project) return;
+    if (!idea) return;
 
     tutorial.innerHTML = `
-        <h2>${escapeHTML(project[0])}</h2>
-
-        <h3>Materials Required</h3>
-        <ul>
-            ${project[1].map(item => `<li>${escapeHTML(item)}</li>`).join("")}
-        </ul>
-
-        <h3>Step-by-Step Instructions</h3>
-        <ol>
-            ${project[2].map(step => `<li>${escapeHTML(step)}</li>`).join("")}
-        </ol>
-
-        <p>♻️ Great job giving waste a new life!</p>
+        <div class="tutorial-card">
+            <h2>${escapeHTML(idea[0])}</h2>
+            <h3>Materials Required</h3>
+            <ul>
+                ${idea[1].map(item => `<li>${escapeHTML(item)}</li>`).join("")}
+            </ul>
+            <h3>Steps</h3>
+            <ol>
+                ${idea[2].map(step => `<li>${escapeHTML(step)}</li>`).join("")}
+            </ol>
+            <button onclick="startProject()">Back to Ideas</button>
+        </div>
     `;
 
     tutorial.scrollIntoView({ behavior: "smooth" });
 }
 
-function escapeHTML(value) {
-    return String(value).replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-    })[char]);
+// PROTECT TEXT DISPLAY
+function escapeHTML(text) {
+    return String(text).replace(/[&<>"']/g, function (character) {
+        const entities = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        };
+
+        return entities[character];
+    });
 }
 
+// START
 loadModel();
