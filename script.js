@@ -1,5 +1,3 @@
-// WASTE TO WONDER
-
 const upload = document.getElementById("wasteImage");
 const preview = document.getElementById("preview");
 const result = document.getElementById("result");
@@ -184,19 +182,26 @@ const projects = {
         ["Phone Stand", ["Old phone", "Ready-made stand"], ["Make sure the phone is switched off if it is damaged.", "Use a suitable ready-made stand.", "Reuse the phone as a display device only if it works safely."]],
         ["Electronic Recycling", ["Old phone"], ["Do not open the phone.", "Take it to an authorized e-waste collection center.", "Follow the center's recycling instructions."]],
         ["Phone Donation", ["Working old phone"], ["Check that the phone works.", "Remove personal information with adult guidance.", "Donate it through a trusted organization."]]
-    ],
-
-    default: [
-        ["Home Decoration", ["Clean waste material", "Decorations"], ["Clean the material.", "Choose a design.", "Decorate it safely."]],
-        ["Creative Craft", ["Waste material", "Paper", "Glue"], ["Collect clean materials.", "Plan a craft.", "Assemble safely."]],
-        ["Garden Decoration", ["Suitable material", "Paint"], ["Choose weather-safe material.", "Clean it.", "Decorate it."]],
-        ["Gift Decoration", ["Clean material", "Ribbon"], ["Choose suitable clean material.", "Decorate it.", "Use it as gift decoration."]],
-        ["Desk Display", ["Clean material", "Colors"], ["Clean the material.", "Decorate it.", "Display it."]],
-        ["Reusable Container", ["Suitable container", "Label"], ["Clean the container.", "Add a label.", "Store suitable items."]],
-        ["Wall Collage", ["Clean material", "Glue"], ["Arrange clean pieces.", "Create a pattern.", "Display safely."]],
-        ["Garden Marker", ["Suitable material", "Marker"], ["Choose a safe material.", "Write a plant name.", "Place it near a pot."]]
     ]
 };
+
+// LIVING THINGS CHECK
+function isLivingThing(label) {
+    const blockedWords = [
+        "person", "human", "man", "woman", "boy", "girl",
+        "face", "head", "hand", "arm", "leg", "foot",
+        "neck", "body", "skin", "finger", "people",
+        "dog", "cat", "bird", "animal", "horse", "cow",
+        "elephant", "lion", "tiger", "monkey", "fish",
+        "rabbit", "snake", "butterfly", "insect",
+        "flower", "plant", "tree", "leaf", "grass",
+        "vegetable", "fruit", "mushroom"
+    ];
+
+    return blockedWords.some(word =>
+        label.toLowerCase().includes(word)
+    );
+}
 
 // LOAD AI MODEL
 async function loadModel() {
@@ -248,15 +253,24 @@ async function identifyObject() {
 
     try {
         const predictions = await model.classify(preview);
-
         console.log(predictions);
 
         const label = predictions[0].className.toLowerCase();
 
-        if (
-            label.includes("water bottle") ||
-            label.includes("bottle")
-        ) {
+        if (isLivingThing(label)) {
+            selectedObject = "default";
+            currentIdeas = [];
+            shownIdeas = [];
+
+            result.innerHTML = `
+                <h2>Detected Object</h2>
+                <p>AI Prediction: ${escapeHTML(label)}</p>
+                <h3>No reuse ideas for this object.</h3>
+            `;
+            return;
+        }
+
+        if (label.includes("water bottle") || label.includes("bottle")) {
             selectedObject = "bottle";
         } else if (
             label.includes("carton") ||
@@ -269,9 +283,7 @@ async function identifyObject() {
             label.includes("envelope")
         ) {
             selectedObject = "paper";
-        } else if (
-            label.includes("spoon")
-        ) {
+        } else if (label.includes("spoon")) {
             selectedObject = "spoon";
         } else if (
             label.includes("jersey") ||
@@ -285,14 +297,9 @@ async function identifyObject() {
             label.includes("tin")
         ) {
             selectedObject = "can";
-        } else if (
-            label.includes("jar") ||
-            label.includes("bottle")
-        ) {
+        } else if (label.includes("jar")) {
             selectedObject = "jar";
-        } else if (
-            label.includes("wood")
-        ) {
+        } else if (label.includes("wood")) {
             selectedObject = "wood";
         } else if (
             label.includes("cellular telephone") ||
@@ -303,9 +310,26 @@ async function identifyObject() {
             selectedObject = "phone";
         } else {
             selectedObject = "default";
+            currentIdeas = [];
+            shownIdeas = [];
+
+            result.innerHTML = `
+                <h2>What object is this?</h2>
+                <p>AI Prediction: ${escapeHTML(label)}</p>
+                <input id="objectNameInput"
+                    type="text"
+                    placeholder="Enter object name">
+                <button onclick="checkUnknownObject()">
+                    Submit
+                </button>
+            `;
+            return;
         }
 
         const object = basicDetails[selectedObject];
+
+        currentIdeas = projects[selectedObject] || [];
+        shownIdeas = [];
 
         result.innerHTML = `
             <h2>Detected Object: ${escapeHTML(object.name)}</h2>
@@ -315,12 +339,63 @@ async function identifyObject() {
             <button onclick="startProject()">Show Reuse Ideas</button>
         `;
 
-        currentIdeas = projects[selectedObject] || projects.default;
-        shownIdeas = [];
-
     } catch (error) {
         console.error(error);
         result.innerHTML = "<p>Could not identify the image. Please try another clear photo.</p>";
+    }
+}
+
+// CHECK UNKNOWN OBJECT
+function checkUnknownObject() {
+    const input = document.getElementById("objectNameInput");
+    const name = input.value.trim().toLowerCase();
+
+    if (!name) {
+        alert("Please enter the object name!");
+        return;
+    }
+
+    if (isLivingThing(name)) {
+        result.innerHTML = `
+            <h2>${escapeHTML(name)}</h2>
+            <h3>No reuse ideas for this object.</h3>
+        `;
+        return;
+    }
+
+    const objectMap = {
+        "bottle": "bottle",
+        "plastic bottle": "bottle",
+        "cardboard": "cardboard",
+        "box": "cardboard",
+        "paper": "paper",
+        "spoon": "spoon",
+        "clothes": "clothes",
+        "shirt": "clothes",
+        "can": "can",
+        "tin": "can",
+        "jar": "jar",
+        "wood": "wood",
+        "phone": "phone",
+        "mobile": "phone"
+    };
+
+    const key = objectMap[name];
+
+    if (key && projects[key]) {
+        selectedObject = key;
+        currentIdeas = projects[key];
+        shownIdeas = [];
+
+        result.innerHTML = `
+            <h2>Object: ${escapeHTML(basicDetails[key].name)}</h2>
+            <button onclick="startProject()">Show Reuse Ideas</button>
+        `;
+    } else {
+        result.innerHTML = `
+            <h2>Object: ${escapeHTML(name)}</h2>
+            <h3>No reuse ideas available for this object.</h3>
+        `;
     }
 }
 
@@ -352,7 +427,12 @@ function identifyAgain() {
 
 // START REUSE PROJECTS
 function startProject() {
-    currentIdeas = projects[selectedObject] || projects.default;
+    if (!projects[selectedObject]) {
+        result.innerHTML = "<h3>No reuse ideas for this object.</h3>";
+        return;
+    }
+
+    currentIdeas = projects[selectedObject];
     shownIdeas = [];
 
     result.innerHTML = `
@@ -360,9 +440,7 @@ function startProject() {
         <button onclick="generateMoreIdeas()">Generate More Ideas</button>
     `;
 
-    tutorial.innerHTML = `
-        <div id="ideasList"></div>
-    `;
+    tutorial.innerHTML = `<div id="ideasList"></div>`;
 
     generateMoreIdeas();
 }
@@ -382,9 +460,7 @@ function generateMoreIdeas() {
         return;
     }
 
-    const selected = remaining.slice(0, 5);
-
-    selected.forEach(idea => {
+    remaining.slice(0, 5).forEach(idea => {
         shownIdeas.push(idea);
 
         list.innerHTML += `
@@ -425,7 +501,7 @@ function showTutorial(projectName) {
 
 // PROTECT TEXT DISPLAY
 function escapeHTML(text) {
-    return String(text).replace(/[&<>"']/g, function (character) {
+    return String(text).replace(/[&<>"']/g, function(character) {
         const entities = {
             "&": "&amp;",
             "<": "&lt;",
